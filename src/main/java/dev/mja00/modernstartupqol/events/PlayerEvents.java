@@ -1,12 +1,11 @@
 package dev.mja00.modernstartupqol.events;
 
-import dev.mja00.modernstartupqol.MSQConfig;
-import net.minecraftforge.api.distmarker.Dist;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.mja00.modernstartupqol.MSQConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +29,7 @@ public class PlayerEvents {
     static boolean hasLeftMainMenu = false;
 
     @SubscribeEvent
-    public static void onGuiDraw(ScreenEvent.DrawScreenEvent event) {
+    public static void onGuiDraw(ScreenEvent.Render event) {
         if (!hasLeftMainMenu && event.getScreen() instanceof TitleScreen) {
             hasBeenMainMenu = true;
             long minutes = (startupTime / 1000) / 60;
@@ -62,14 +61,14 @@ public class PlayerEvents {
     }
 
     @SubscribeEvent
-    public static void onGuiOpen(ScreenOpenEvent event) {
+    public static void onGuiOpen(ScreenEvent.Init event) {
         if (!triggered && event.getScreen() instanceof TitleScreen) {
             triggered = true;
 
-            Minecraft.getInstance().options.fullscreen = trueFullscreen;
-            if (Minecraft.getInstance().options.fullscreen && !Minecraft.getInstance().getWindow().isFullscreen()) {
+            Minecraft.getInstance().options.fullscreen().set(trueFullscreen);
+            if (Minecraft.getInstance().options.fullscreen().get() && !Minecraft.getInstance().getWindow().isFullscreen()) {
                 Minecraft.getInstance().getWindow().toggleFullScreen();
-                Minecraft.getInstance().options.fullscreen = Minecraft.getInstance().getWindow().isFullscreen();
+                Minecraft.getInstance().options.fullscreen().set(Minecraft.getInstance().getWindow().isFullscreen());
             }
 
             startupTime = ManagementFactory.getRuntimeMXBean().getUptime();
