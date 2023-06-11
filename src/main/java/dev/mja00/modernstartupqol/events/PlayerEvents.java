@@ -3,6 +3,7 @@ package dev.mja00.modernstartupqol.events;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.mja00.modernstartupqol.MSQConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -10,6 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Matrix4f;
 
 import java.awt.*;
 import java.lang.management.ManagementFactory;
@@ -54,7 +56,11 @@ public class PlayerEvents {
                 // This is "bad"
                 color = Color.RED.getRGB();
             }
-            Minecraft.getInstance().font.drawShadow(new PoseStack(), txt, pX, pY, color);
+            // Mojang removed the drawShadow method, so we have to use drawInBatch instead. Why? I wish I knew but fuck me it's annoying now
+            // The below shit is to make the line readable
+            Matrix4f matrix = new PoseStack().last().pose();
+            var buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+            Minecraft.getInstance().font.drawInBatch(txt, pX, pY, color, true, matrix, buffer, Font.DisplayMode.NORMAL, 0, 15728880, false);
         } else if (hasBeenMainMenu) {
             hasLeftMainMenu = true;
         }
